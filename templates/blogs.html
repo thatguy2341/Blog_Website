@@ -1,0 +1,130 @@
+{% include "header.html" %}
+<div class="background" style="background-image: url('https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80')">
+<!-- Page Header -->
+<header class="masthead"
+        style="background-image: url('https://images.unsplash.com/photo-1661956602153-23384936a1d3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80')">
+   <div class="overlay"></div>
+   <div class="container">
+      <div class="row">
+         <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="site-heading">
+               <h1>The People's Blogs</h1>
+               <span class="subheading">Feel Free To Post Your Random Thoughts.</span>
+            </div>
+         </div>
+      </div>
+   </div>
+</header>
+
+
+<form class="form container" method="post">
+         <div class="row search-row content">
+         <div class="col-lg-12 col-md-12 col-sm-12" id="search-blogs">
+            <input class="form-control" type="search" name="search" placeholder="Search For a Blog or Author" aria-label="Search" style="position: absolute; z-index: 0; right: 1%;">
+            <button class="btn btn-info btn-delete" type="submit" style=" padding: 10px 15px; position: absolute; right: 0%;">🔍</button>
+         </div>
+
+         {% with messages = get_flashed_messages() %}
+         {% if messages: %}
+            <p>{{messages[0]}}</p>
+         {% endif %}
+         {% endwith %}
+
+         </div>
+      </form>
+<!-- Main Content -->
+<div class="container">
+   {% if current_user.is_authenticated and current_user.blogs | length < 2 %}
+   <div class="clearfix" style="margin: 3rem 0;">
+      <a class="btn btn-new-post btn-outline-info float-left" href="{{url_for('create_blog')}}">Create New Blog</a>
+   </div>
+   {% endif %}
+
+   <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+         {% if not all_blogs and not current_user.is_authenticated: %}
+         <div style="text-align: center; margin-bottom: 20rem;">
+            <p>
+               It seems that no posts have loaded 😖
+            </p>
+         </div>
+
+         {% else: %}
+         {% for blog in all_blogs[page * 10 : page * 10 + 9]: %}
+         <hr>
+         <div class="post-preview" style="font-size: 1.25rem;">
+            <a href="{{ url_for('get_all_posts', blog_id=blog.id, raise_view=1) }}">
+               <h1 class="post-title">
+                  {{blog.name}}
+               </h1>
+               <h6> 👁️{{blog.views}}</h6>
+               {% if blog.description | length > 65: %}
+               <h4 class="post-subtitle" style="font-size: 1.45rem; font-weight: 300;">
+                  {{blog.description[0:64] | safe}}...
+               </h4>
+               {% else: %}
+               <h4 class="post-subtitle">
+                  {{blog.description | safe}}
+               </h4>
+               {% endif %}
+            </a>
+            <p class="post-meta">Created by
+               <a href="#">{{blog.author.name}}</a>
+               on {{blog.created_date}}
+            </p>
+         </div>
+         {% endfor %}
+         <hr style="margin-bottom: 15rem;">
+         {% endif %}
+         {% if not current_user.is_authenticated %}
+         <hr>
+         {% endif %}
+
+         {% if all_blogs | length > 10 %}
+         <div class="container clearfix" style="margin: 3rem 0;">
+         <a class="btn btn-new-post btn-outline-info float-left" href="{{url_for('next_page', num=page+1)}}">Next Page</a>
+         </div>
+         {% endif %}
+
+         <!-- New Post -->
+         {% if current_user.is_authenticated and current_user.blogs | length < 2 %}
+         <hr style="margin-top: 5rem;">
+         <div class="clearfix">
+            <a class="btn btn-new-post btn-primary float-right" href="{{url_for('create_blog')}}">Create New Blog</a>
+         </div>
+         {% elif current_user.blogs | length < 2: %}
+
+            <h4 style="text-align: center; line-height: 2; margin-bottom: 2rem;">
+               You can create your own blogs, by joining the community.
+               <br>
+            </h4>
+
+         <div class="row">
+            <div class="col col-lg-9 col-md-9 col-sm-9">
+               Click register, to create a new account:
+            </div>
+
+            <div class="col col-lg-3 col-md-3 col-sm-3">
+               <a class="btn btn-new-post btn-outline-primary btn-open float-right" href="{{ url_for('register')}}">register</a>
+            </div>
+         </div>
+         <hr>
+         <div class="row">
+            <div class="col col-lg-9 col-md-9 col-sm-9" >
+               If you already have an account, login here:
+            </div>
+            <div class="col col-lg-3 col-md-3 col-sm-3">
+               <a class="btn btn-new-post btn-outline-success btn-open float-right" href="{{ url_for('login')}}">login</a>
+            </div>
+         </div>
+
+
+         {% endif %}
+      </div>
+   </div>
+</div>
+<hr>
+
+{% include "footer.html" %}
+
+</div>
