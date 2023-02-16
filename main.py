@@ -104,11 +104,12 @@ def home_page():
             for blog in blogs:
                 all_blogs.add(blog)
 
+        all_blogs = list(all_blogs)
         if not all_blogs:
             all_blogs = db.session.query(Blogs).all()
             flash(f"Sorry, we couldn't find '{search}'")
 
-        return render_template('blogs.html', all_blogs=list(all_blogs), page=num)
+        return render_template('blogs.html', all_blogs=all_blogs, page=num)
 
     all_blogs = db.session.query(Blogs).all()
 
